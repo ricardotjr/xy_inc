@@ -1,0 +1,37 @@
+<project basedir="." name="xyinc" default="tomcat.install-deploy">
+
+	<property file="build.properties" />
+		
+	<target name="clean">
+		<antcall target="mvn">
+			<param name="mvn.command" value="clean" />
+		</antcall>
+	</target>
+
+	<target name="install" description="Install" depends="clean">
+		<antcall target="mvn">
+			<param name="mvn.command" value="install" />
+		</antcall>
+	</target>
+
+	<target name="mvn">
+		<exec executable="${mvn.executable}" dir=".">
+			<env key="JAVA_HOME" value="${java.home}" />
+			<arg value="${mvn.command}" />
+			<arg value="-Dmaven.test.skip=${mvn.test.skip}" />
+		</exec>
+	</target>
+	
+	<target name="tomcat.install-deploy" depends="install,tomcat.deploy">
+	</target>
+
+	<target name="tomcat.deploy">
+		<copy verbose="true" file="target/${war.file.name}" todir="${tomcat.home}/webapps" overwrite="true" />
+	</target>
+
+	<target name="tomcat.undeploy">
+		<delete file="${tomcat.home}/webapps/${war.file.name}" />
+		<delete dir="${tomcat.home}/webapps/${context.file.name}" />
+	</target>
+
+</project>
